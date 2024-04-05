@@ -66,7 +66,7 @@ def determinePatchVersion = {
 
     exec {
         // this is buggy sometimes: add or remove 'cmd'
-        commandLine 'cmd', 'git', 'rev-list', 'HEAD', '--count'
+        commandLine 'git', 'rev-list', 'HEAD', '--count'
         standardOutput = tagInfo
     }
 
