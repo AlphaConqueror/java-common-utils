@@ -57,7 +57,6 @@ def checkLicenseUpToDate = { path ->
     }
 }
 
-checkLicenseUpToDate('HEADER.txt')
 checkLicenseUpToDate('LICENSE.txt')
 
 def determinePatchVersion = {
@@ -80,7 +79,7 @@ def apiVersion = majorVersion + '.' + minorVersion
 def fullVersion = apiVersion + '.' + patchVersion
 
 license {
-    header = rootProject.file('HEADER.txt')
+    header = rootProject.file('LICENSE.txt')
     include '**/*.java'
     newLine = true
 }
