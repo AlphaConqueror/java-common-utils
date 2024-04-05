@@ -1,0 +1,115 @@
+import java.time.Year
+
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'org.cadixdev.licenser' version '0.6.1'
+}
+
+defaultTasks 'licenseFormat', 'build'
+
+group = 'de.alphaconqueror'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    api 'com.google.guava:guava:33.0.0-jre'
+    api 'io.leangen.geantyref:geantyref:1.3.14'
+
+    api('org.spongepowered:configurate-core:3.7.2') {
+        transitive = false
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+
+    if (JavaVersion.current() != JavaVersion.VERSION_1_8) {
+        options.release = 8
+    }
+}
+
+// read environment from .env
+// this somehow causes a lot of warnings at unrelated locations
+Map<String, String> envMap = new HashMap<>()
+File envFile = file('.env')
+
+if (envFile.exists()) {
+    envFile.readLines().each() {
+        if (!it.isEmpty() && !it.startsWith("#")) {
+            def (key, value) = it.tokenize('=')
+
+            envMap[key] = value
+        }
+    }
+}
+
+jar {
+    from '../LICENSE.txt'
+}
+
+def checkLicenseUpToDate = { path ->
+    if (!rootProject.file(path).readLines().stream().anyMatch { it.contains(Year.now().toString()) }) {
+        throw new Exception("${path} does not contain current year.")
+    }
+}
+
+checkLicenseUpToDate('HEADER.txt')
+checkLicenseUpToDate('LICENSE.txt')
+
+def determinePatchVersion = {
+    // get the name of the last tag
+    def tagInfo = new ByteArrayOutputStream()
+
+    exec {
+        // this is buggy sometimes: add or remove 'cmd'
+        commandLine 'cmd', 'git', 'rev-list', 'HEAD', '--count'
+        standardOutput = tagInfo
+    }
+
+    return tagInfo.toString().replace("\n", "")
+}
+
+def majorVersion = '1'
+def minorVersion = '0'
+def patchVersion = determinePatchVersion()
+def apiVersion = majorVersion + '.' + minorVersion
+def fullVersion = apiVersion + '.' + patchVersion
+
+license {
+    header = rootProject.file('HEADER.txt')
+    include '**/*.java'
+    newLine = true
+}
+
+javadoc {
+    title = 'Java Common Utils (v' + apiVersion + ')'
+    options.encoding = 'UTF-8'
+    options.charSet = 'UTF-8'
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+publishing {
+    repositories {
+        maven {
+            url = uri("https://maven.pkg.github.com/alphaconqueror/java-common-utils")
+
+            credentials {
+                username = envMap["USERNAME"]
+                password = envMap["TOKEN"]
+            }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+            from(components.java)
+        }
+    }
+}
