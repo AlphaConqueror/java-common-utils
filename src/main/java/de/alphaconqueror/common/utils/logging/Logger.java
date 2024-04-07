@@ -35,5 +35,7 @@ public interface Logger {
 
     void warn(String s, Object... args);
 
+    void severe(String s, Object... args);
+
     void severe(String s, Throwable t);
 }
