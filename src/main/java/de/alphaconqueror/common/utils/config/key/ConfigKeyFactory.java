@@ -44,6 +44,15 @@ public interface ConfigKeyFactory<T> {
             .toLowerCase(Locale.ROOT);
     ConfigKeyFactory<List<String>> STRING_LIST = (config, path, def) -> ImmutableList.copyOf(
             config.getStringList(path, ImmutableList.of()));
+
+    ConfigKeyFactory<List<Integer>> INT_LIST = (config, path, def) -> ImmutableList.copyOf(
+            config.getIntList(path, ImmutableList.of()));
+
+    ConfigKeyFactory<List<Long>> LONG_LIST = (config, path, def) -> ImmutableList.copyOf(
+            config.getLongList(path, ImmutableList.of()));
+
+    ConfigKeyFactory<List<Double>> DOUBLE_LIST = (config, path, def) -> ImmutableList.copyOf(
+            config.getDoubleList(path, ImmutableList.of()));
     ConfigKeyFactory<Map<String, String>> STRING_MAP = (config, path, def) -> ImmutableMap.copyOf(
             config.getStringMap(path, ImmutableMap.of()));
 
@@ -98,8 +107,20 @@ public interface ConfigKeyFactory<T> {
         return comparableKey(DOUBLE, path, def);
     }
 
-    static SimpleConfigKey<List<String>> listKey(final String path, final String... def) {
+    static SimpleConfigKey<List<String>> stringListKey(final String path, final String... def) {
         return key(STRING_LIST, path, Arrays.asList(def));
+    }
+
+    static SimpleConfigKey<List<Integer>> intListKey(final String path, final Integer... def) {
+        return key(INT_LIST, path, Arrays.asList(def));
+    }
+
+    static SimpleConfigKey<List<Long>> longListKey(final String path, final Long... def) {
+        return key(LONG_LIST, path, Arrays.asList(def));
+    }
+
+    static SimpleConfigKey<List<Double>> doubleListKey(final String path, final Double... def) {
+        return key(DOUBLE_LIST, path, Arrays.asList(def));
     }
 
     static SimpleConfigKey<Map<String, String>> mapKey(final String path) {
