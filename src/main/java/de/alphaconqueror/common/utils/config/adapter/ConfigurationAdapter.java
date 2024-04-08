@@ -44,6 +44,12 @@ public interface ConfigurationAdapter {
 
     List<String> getStringList(String path, List<String> def) throws KeyNotFoundException;
 
+    List<Integer> getIntList(String path, List<Integer> def) throws KeyNotFoundException;
+
+    List<Long> getLongList(String path, List<Long> def) throws KeyNotFoundException;
+
+    List<Double> getDoubleList(String path, List<Double> def) throws KeyNotFoundException;
+
     Map<String, String> getStringMap(String path,
             Map<String, String> def) throws KeyNotFoundException;
 }

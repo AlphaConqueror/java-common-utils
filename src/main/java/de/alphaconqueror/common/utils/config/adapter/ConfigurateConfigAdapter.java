@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.Types;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 public abstract class ConfigurateConfigAdapter implements ConfigurationAdapter {
@@ -90,6 +91,27 @@ public abstract class ConfigurateConfigAdapter implements ConfigurationAdapter {
             final List<String> def) throws KeyNotFoundException {
         return this.resolvePath(path, node -> node.isVirtual() || !node.isList())
                 .getList(Object::toString);
+    }
+
+    @Override
+    public List<Integer> getIntList(final String path,
+            final List<Integer> def) throws KeyNotFoundException {
+        return this.resolvePath(path, node -> node.isVirtual() || !node.isList())
+                .getList(Types::asInt, def);
+    }
+
+    @Override
+    public List<Long> getLongList(final String path,
+            final List<Long> def) throws KeyNotFoundException {
+        return this.resolvePath(path, node -> node.isVirtual() || !node.isList())
+                .getList(Types::asLong, def);
+    }
+
+    @Override
+    public List<Double> getDoubleList(final String path,
+            final List<Double> def) throws KeyNotFoundException {
+        return this.resolvePath(path, node -> node.isVirtual() || !node.isList())
+                .getList(Types::asDouble, def);
     }
 
     @SuppressWarnings("unchecked")
