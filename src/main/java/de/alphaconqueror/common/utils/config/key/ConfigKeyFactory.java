@@ -28,7 +28,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import de.alphaconqueror.common.utils.config.adapter.ConfigurationAdapter;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -107,24 +106,25 @@ public interface ConfigKeyFactory<T> {
         return comparableKey(DOUBLE, path, def);
     }
 
-    static SimpleConfigKey<List<String>> stringListKey(final String path, final String... def) {
-        return key(STRING_LIST, path, Arrays.asList(def));
+    static SimpleConfigKey<List<String>> stringListKey(final String path, final List<String> def) {
+        return key(STRING_LIST, path, def);
     }
 
-    static SimpleConfigKey<List<Integer>> intListKey(final String path, final Integer... def) {
-        return key(INT_LIST, path, Arrays.asList(def));
+    static SimpleConfigKey<List<Integer>> intListKey(final String path, final List<Integer> def) {
+        return key(INT_LIST, path, def);
     }
 
-    static SimpleConfigKey<List<Long>> longListKey(final String path, final Long... def) {
-        return key(LONG_LIST, path, Arrays.asList(def));
+    static SimpleConfigKey<List<Long>> longListKey(final String path, final List<Long> def) {
+        return key(LONG_LIST, path, def);
     }
 
-    static SimpleConfigKey<List<Double>> doubleListKey(final String path, final Double... def) {
-        return key(DOUBLE_LIST, path, Arrays.asList(def));
+    static SimpleConfigKey<List<Double>> doubleListKey(final String path, final List<Double> def) {
+        return key(DOUBLE_LIST, path, def);
     }
 
-    static SimpleConfigKey<Map<String, String>> mapKey(final String path) {
-        return key(STRING_MAP, path, null);
+    static SimpleConfigKey<Map<String, String>> stringStringMapKey(final String path,
+            final Map<String, String> def) {
+        return key(STRING_MAP, path, def);
     }
 
     /**
