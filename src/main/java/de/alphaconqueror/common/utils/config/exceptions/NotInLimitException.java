@@ -25,21 +25,26 @@
 package de.alphaconqueror.common.utils.config.exceptions;
 
 import de.alphaconqueror.common.utils.config.key.SimpleConfigKey;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class NotInLimitException extends ConfigException {
 
-    private final Object value;
+    @NonNull
+    private final SimpleConfigKey<?> key;
+    @Nullable
+    private final Object result;
 
-    public NotInLimitException(final Object value) {this.value = value;}
-
-    @Override
-    public String getMessage(final SimpleConfigKey<?> key) {
-        return "Value '" + this.getValue(key).toString() + "' is not in " + key.possibilities()
-                .toString() + '.';
+    public NotInLimitException(@NonNull final SimpleConfigKey<?> key,
+            @Nullable final Object result) {
+        super(key.path(), key.def());
+        this.key = key;
+        this.result = result;
     }
 
     @Override
-    public Object getValue(final SimpleConfigKey<?> key) {
-        return this.value;
+    @NonNull
+    public String getMessage() {
+        return "Value '" + this.result + "' is not in " + this.key.possibilities().toString() + '.';
     }
 }

@@ -57,7 +57,7 @@ public class SimpleConfigKey<T> implements ConfigKey<T> {
             return result;
         }
 
-        throw new NotInLimitException(result);
+        throw new NotInLimitException(this, result);
     }
 
     public ConfigKeyFactory<T> factory() {

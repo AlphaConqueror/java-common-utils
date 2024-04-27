@@ -24,12 +24,19 @@
 
 package de.alphaconqueror.common.utils.config.exceptions;
 
-import de.alphaconqueror.common.utils.config.key.SimpleConfigKey;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class KeyNotFoundException extends ConfigException {
 
+
+    public KeyNotFoundException(@NonNull final String path, @Nullable final Object def) {
+        super(path, def);
+    }
+
     @Override
-    public String getMessage(final SimpleConfigKey<?> key) {
-        return "Could not find key '" + key.path() + "' in the config.";
+    @NonNull
+    public String getMessage() {
+        return "Could not find key '" + this.getPath() + "' in the config.";
     }
 }

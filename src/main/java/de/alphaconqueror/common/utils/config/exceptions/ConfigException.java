@@ -24,13 +24,32 @@
 
 package de.alphaconqueror.common.utils.config.exceptions;
 
-import de.alphaconqueror.common.utils.config.key.SimpleConfigKey;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public abstract class ConfigException extends RuntimeException {
 
-    public abstract String getMessage(SimpleConfigKey<?> key);
+    @NonNull
+    private final String path;
+    @Nullable
+    private final Object def;
 
-    public Object getValue(final SimpleConfigKey<?> key) {
-        return key.def();
+    public ConfigException(@NonNull final String path, @Nullable final Object def) {
+        this.path = path;
+        this.def = def;
+    }
+
+    @Override
+    @NonNull
+    public abstract String getMessage();
+
+    @NonNull
+    public String getPath() {
+        return this.path;
+    }
+
+    @Nullable
+    public Object getDef() {
+        return this.def;
     }
 }

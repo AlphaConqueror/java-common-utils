@@ -24,28 +24,28 @@
 
 package de.alphaconqueror.common.utils.config.exceptions;
 
-import de.alphaconqueror.common.utils.config.key.SimpleConfigKey;
+import de.alphaconqueror.common.utils.config.key.ComparableConfigKey;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class NotInRangeException extends ConfigException {
 
+    private final Object result;
     private final Object min;
     private final Object max;
-    private final Object value;
 
-    public NotInRangeException(final Object min, final Object max, final Object value) {
-        this.min = min;
-        this.max = max;
-        this.value = value;
+    public NotInRangeException(@NonNull final ComparableConfigKey<?> key,
+            @Nullable final Object result) {
+        super(key.path(), key.def());
+        this.result = result;
+        this.min = key.getMin();
+        this.max = key.getMax();
     }
 
     @Override
-    public String getMessage(final SimpleConfigKey<?> key) {
-        return "Value '" + this.getValue(key).toString() + "' not in range [" + this.min.toString()
-                + ',' + this.max.toString() + "].";
-    }
-
-    @Override
-    public Object getValue(final SimpleConfigKey<?> key) {
-        return this.value;
+    @NonNull
+    public String getMessage() {
+        return "Value '" + this.result + "' not in range [" + this.min.toString() + ','
+                + this.max.toString() + "].";
     }
 }

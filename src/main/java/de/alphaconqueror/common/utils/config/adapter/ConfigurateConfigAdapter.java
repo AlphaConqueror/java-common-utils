@@ -63,54 +63,54 @@ public abstract class ConfigurateConfigAdapter implements ConfigurationAdapter {
 
     @Override
     public String getString(final String path, final String def) throws KeyNotFoundException {
-        return this.resolvePath(path, ConfigurationNode::isVirtual).getString(def);
+        return this.resolvePath(path, def, ConfigurationNode::isVirtual).getString(def);
     }
 
     @Override
     public int getInteger(final String path, final int def) throws KeyNotFoundException {
-        return this.resolvePath(path, ConfigurationNode::isVirtual).getInt(def);
+        return this.resolvePath(path, def, ConfigurationNode::isVirtual).getInt(def);
     }
 
     @Override
     public long getLong(final String path, final long def) throws KeyNotFoundException {
-        return this.resolvePath(path, ConfigurationNode::isVirtual).getLong(def);
+        return this.resolvePath(path, def, ConfigurationNode::isVirtual).getLong(def);
     }
 
     @Override
     public double getDouble(final String path, final double def) throws KeyNotFoundException {
-        return this.resolvePath(path, ConfigurationNode::isVirtual).getDouble(def);
+        return this.resolvePath(path, def, ConfigurationNode::isVirtual).getDouble(def);
     }
 
     @Override
     public boolean getBoolean(final String path, final boolean def) throws KeyNotFoundException {
-        return this.resolvePath(path, ConfigurationNode::isVirtual).getBoolean(def);
+        return this.resolvePath(path, def, ConfigurationNode::isVirtual).getBoolean(def);
     }
 
     @Override
     public List<String> getStringList(final String path,
             final List<String> def) throws KeyNotFoundException {
-        return this.resolvePath(path, node -> node.isVirtual() || !node.isList())
+        return this.resolvePath(path, def, node -> node.isVirtual() || !node.isList())
                 .getList(Object::toString);
     }
 
     @Override
     public List<Integer> getIntList(final String path,
             final List<Integer> def) throws KeyNotFoundException {
-        return this.resolvePath(path, node -> node.isVirtual() || !node.isList())
+        return this.resolvePath(path, def, node -> node.isVirtual() || !node.isList())
                 .getList(Types::asInt, def);
     }
 
     @Override
     public List<Long> getLongList(final String path,
             final List<Long> def) throws KeyNotFoundException {
-        return this.resolvePath(path, node -> node.isVirtual() || !node.isList())
+        return this.resolvePath(path, def, node -> node.isVirtual() || !node.isList())
                 .getList(Types::asLong, def);
     }
 
     @Override
     public List<Double> getDoubleList(final String path,
             final List<Double> def) throws KeyNotFoundException {
-        return this.resolvePath(path, node -> node.isVirtual() || !node.isList())
+        return this.resolvePath(path, def, node -> node.isVirtual() || !node.isList())
                 .getList(Types::asDouble, def);
     }
 
@@ -118,14 +118,15 @@ public abstract class ConfigurateConfigAdapter implements ConfigurationAdapter {
     @Override
     public Map<String, String> getStringMap(final String path,
             final Map<String, String> def) throws KeyNotFoundException {
-        final Map<String, Object> m = (Map<String, Object>) this.resolvePath(path,
+        final Map<String, Object> m = (Map<String, Object>) this.resolvePath(path, def,
                 node -> node.isVirtual() || !node.isMap()).getValue(Collections.emptyMap());
 
-        return m.entrySet().stream()
+        return m.entrySet()
+                .stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().toString()));
     }
 
-    private ConfigurationNode resolvePath(final String path,
+    private ConfigurationNode resolvePath(final String path, final Object def,
             final Predicate<ConfigurationNode> predicate) {
         if (this.root == null) {
             throw new RuntimeException("Config is not loaded.");
@@ -135,7 +136,7 @@ public abstract class ConfigurateConfigAdapter implements ConfigurationAdapter {
                 Splitter.on('.').splitToList(path).toArray());
 
         if (predicate.test(node)) {
-            throw new KeyNotFoundException();
+            throw new KeyNotFoundException(path, def);
         }
 
         return node;

@@ -27,7 +27,6 @@ package de.alphaconqueror.common.utils.config;
 import de.alphaconqueror.common.utils.config.adapter.ConfigurationAdapter;
 import de.alphaconqueror.common.utils.config.exceptions.ConfigException;
 import de.alphaconqueror.common.utils.config.key.ConfigKey;
-import de.alphaconqueror.common.utils.config.key.SimpleConfigKey;
 import de.alphaconqueror.common.utils.logging.Logger;
 import de.alphaconqueror.common.utils.util.ImmutableCollectors;
 import java.lang.reflect.Modifier;
@@ -38,11 +37,11 @@ public class KeyedConfiguration {
 
     private final Logger logger;
     private final ConfigurationAdapter adapter;
-    private final List<? extends ConfigKey<?>> keys;
+    private final List<ConfigKey<?>> keys;
     private final ValuesMap values;
 
     public KeyedConfiguration(final Logger logger, final ConfigurationAdapter adapter,
-            final List<? extends ConfigKey<?>> keys) {
+            final List<ConfigKey<?>> keys) {
         this.logger = logger;
         this.adapter = adapter;
         this.keys = keys;
@@ -55,14 +54,14 @@ public class KeyedConfiguration {
      * @param keysClass the keys class
      * @return the list of keys defined by the class with their ordinal values set
      */
-    public static List<SimpleConfigKey<?>> initialise(final Class<?> keysClass) {
+    public static List<ConfigKey<?>> initialise(final Class<?> keysClass) {
         // get a list of all keys
-        final List<SimpleConfigKey<?>> keys = Arrays.stream(keysClass.getFields())
+        final List<ConfigKey<?>> keys = Arrays.stream(keysClass.getFields())
                 .filter(f -> Modifier.isStatic(f.getModifiers()))
                 .filter(f -> ConfigKey.class.equals(f.getType()))
                 .map(f -> {
                     try {
-                        return (SimpleConfigKey<?>) f.get(null);
+                        return (ConfigKey<?>) f.get(null);
                     } catch (final IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
@@ -108,15 +107,9 @@ public class KeyedConfiguration {
                 try {
                     value = key.get(this.adapter);
                 } catch (final ConfigException e) {
-                    if (key instanceof SimpleConfigKey) {
-                        final SimpleConfigKey<?> simpleKey = (SimpleConfigKey<?>) key;
-
-                        value = e.getValue(simpleKey);
-                        this.logger.warn(e.getMessage(simpleKey)
-                                + " The value of '{}' will be used instead.", value);
-                    } else {
-                        this.logger.severe("Caught exception during loading of config.", e);
-                    }
+                    value = e.getDef();
+                    this.logger.warn(e.getMessage() + " The value of '{}' will be used instead.",
+                            value);
                 }
 
                 this.values.put(key, value);
