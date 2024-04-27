@@ -24,7 +24,7 @@
 
 package de.alphaconqueror.common.utils.config.exceptions;
 
-import de.alphaconqueror.common.utils.config.key.ConfigKey;
+import de.alphaconqueror.common.utils.config.key.SimpleConfigKey;
 
 public class NotInLimitException extends ConfigException {
 
@@ -33,13 +33,13 @@ public class NotInLimitException extends ConfigException {
     public NotInLimitException(final Object value) {this.value = value;}
 
     @Override
-    public String getMessage(final ConfigKey<?> key) {
+    public String getMessage(final SimpleConfigKey<?> key) {
         return "Value '" + this.getValue(key).toString() + "' is not in " + key.possibilities()
                 .toString() + '.';
     }
 
     @Override
-    public Object getValue(final ConfigKey<?> key) {
+    public Object getValue(final SimpleConfigKey<?> key) {
         return this.value;
     }
 }

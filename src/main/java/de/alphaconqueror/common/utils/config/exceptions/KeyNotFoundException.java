@@ -24,12 +24,12 @@
 
 package de.alphaconqueror.common.utils.config.exceptions;
 
-import de.alphaconqueror.common.utils.config.key.ConfigKey;
+import de.alphaconqueror.common.utils.config.key.SimpleConfigKey;
 
 public class KeyNotFoundException extends ConfigException {
 
     @Override
-    public String getMessage(final ConfigKey<?> key) {
+    public String getMessage(final SimpleConfigKey<?> key) {
         return "Could not find key '" + key.path() + "' in the config.";
     }
 }

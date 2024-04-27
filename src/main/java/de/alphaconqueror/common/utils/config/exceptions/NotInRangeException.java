@@ -24,7 +24,7 @@
 
 package de.alphaconqueror.common.utils.config.exceptions;
 
-import de.alphaconqueror.common.utils.config.key.ConfigKey;
+import de.alphaconqueror.common.utils.config.key.SimpleConfigKey;
 
 public class NotInRangeException extends ConfigException {
 
@@ -39,13 +39,13 @@ public class NotInRangeException extends ConfigException {
     }
 
     @Override
-    public String getMessage(final ConfigKey<?> key) {
+    public String getMessage(final SimpleConfigKey<?> key) {
         return "Value '" + this.getValue(key).toString() + "' not in range [" + this.min.toString()
                 + ',' + this.max.toString() + "].";
     }
 
     @Override
-    public Object getValue(final ConfigKey<?> key) {
+    public Object getValue(final SimpleConfigKey<?> key) {
         return this.value;
     }
 }

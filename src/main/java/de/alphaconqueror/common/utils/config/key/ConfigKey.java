@@ -26,7 +26,6 @@ package de.alphaconqueror.common.utils.config.key;
 
 import de.alphaconqueror.common.utils.config.adapter.ConfigurationAdapter;
 import de.alphaconqueror.common.utils.config.exceptions.KeyNotFoundException;
-import java.util.Collection;
 
 /**
  * Represents a key in the configuration.
@@ -36,32 +35,18 @@ import java.util.Collection;
 public interface ConfigKey<T> {
 
     /**
-     * Gets the config key factory.
-     *
-     * @return the config key factory
-     */
-    ConfigKeyFactory<T> factory();
-
-    /**
-     * Gets the path.
-     *
-     * @return the path
-     */
-    String path();
-
-    /**
-     * Gets the default value.
-     *
-     * @return the default value
-     */
-    T def();
-
-    /**
      * Gets the position of this key within the keys enum.
      *
      * @return the position
      */
     int ordinal();
+
+    /**
+     * Sets the ordinal.
+     *
+     * @param ordinal the ordinal
+     */
+    void setOrdinal(final int ordinal);
 
     /**
      * Gets if the config key can be reloaded.
@@ -71,11 +56,11 @@ public interface ConfigKey<T> {
     boolean reloadable();
 
     /**
-     * Gets the possible values.
+     * Sets the reloadable flag.
      *
-     * @return the possible values
+     * @param reloadable if reloadable
      */
-    Collection<T> possibilities();
+    void setReloadable(final boolean reloadable);
 
     /**
      * Resolves and returns the value mapped to this key using the given config instance.

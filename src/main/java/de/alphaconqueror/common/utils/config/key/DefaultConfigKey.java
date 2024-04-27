@@ -25,51 +25,22 @@
 package de.alphaconqueror.common.utils.config.key;
 
 import de.alphaconqueror.common.utils.config.adapter.ConfigurationAdapter;
-import de.alphaconqueror.common.utils.config.exceptions.NotInLimitException;
-import java.util.Collection;
-import java.util.Set;
+import java.util.function.Function;
 
-/**
- * Basic {@link ConfigKey} implementation.
- *
- * @param <T> the value type
- */
-public class SimpleConfigKey<T> implements ConfigKey<T> {
+public class DefaultConfigKey<T> implements ConfigKey<T> {
 
-    private final ConfigKeyFactory<T> factory;
-    private final String path;
-    private final T def;
+    private final Function<? super ConfigurationAdapter, ? extends T> function;
+
     private int ordinal = -1;
     private boolean reloadable = true;
-    private Set<T> possibilities;
 
-    SimpleConfigKey(final ConfigKeyFactory<T> factory, final String path, final T def) {
-        this.factory = factory;
-        this.path = path;
-        this.def = def;
+    DefaultConfigKey(final Function<? super ConfigurationAdapter, ? extends T> function) {
+        this.function = function;
     }
 
     @Override
     public T get(final ConfigurationAdapter adapter) {
-        final T result = this.factory.getValue(adapter, this.path, this.def);
-
-        if (this.possibilities == null || this.possibilities.contains(result)) {
-            return result;
-        }
-
-        throw new NotInLimitException(result);
-    }
-
-    public ConfigKeyFactory<T> factory() {
-        return this.factory;
-    }
-
-    public String path() {
-        return this.path;
-    }
-
-    public T def() {
-        return this.def;
+        return this.function.apply(adapter);
     }
 
     @Override
@@ -90,13 +61,5 @@ public class SimpleConfigKey<T> implements ConfigKey<T> {
     @Override
     public void setReloadable(final boolean reloadable) {
         this.reloadable = reloadable;
-    }
-
-    public Collection<T> possibilities() {
-        return this.possibilities;
-    }
-
-    public void setPossibilities(final Set<T> possibilities) {
-        this.possibilities = possibilities;
     }
 }

@@ -31,6 +31,7 @@ import de.alphaconqueror.common.utils.config.adapter.ConfigurationAdapter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
 
 public interface ConfigKeyFactory<T> {
 
@@ -55,6 +56,10 @@ public interface ConfigKeyFactory<T> {
     ConfigKeyFactory<Map<String, String>> STRING_MAP = (config, path, def) -> ImmutableMap.copyOf(
             config.getStringMap(path, ImmutableMap.of()));
 
+    static <T> DefaultConfigKey<T> key(final Function<ConfigurationAdapter, T> function) {
+        return new DefaultConfigKey<>(function);
+    }
+
     static <T> SimpleConfigKey<T> key(final ConfigKeyFactory<T> factory, final String path,
             final T def) {
         return new SimpleConfigKey<>(factory, path, def);
@@ -65,7 +70,7 @@ public interface ConfigKeyFactory<T> {
         return new ComparableConfigKey<>(factory, path, def);
     }
 
-    static <T> SimpleConfigKey<T> notReloadable(final SimpleConfigKey<T> key) {
+    static <T> ConfigKey<T> notReloadable(final ConfigKey<T> key) {
         key.setReloadable(false);
         return key;
     }

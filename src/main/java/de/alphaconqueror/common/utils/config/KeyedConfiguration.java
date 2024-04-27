@@ -59,13 +59,15 @@ public class KeyedConfiguration {
         // get a list of all keys
         final List<SimpleConfigKey<?>> keys = Arrays.stream(keysClass.getFields())
                 .filter(f -> Modifier.isStatic(f.getModifiers()))
-                .filter(f -> ConfigKey.class.equals(f.getType())).map(f -> {
+                .filter(f -> ConfigKey.class.equals(f.getType()))
+                .map(f -> {
                     try {
                         return (SimpleConfigKey<?>) f.get(null);
                     } catch (final IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
-                }).collect(ImmutableCollectors.toList());
+                })
+                .collect(ImmutableCollectors.toList());
 
         // set ordinal values
         for (int i = 0; i < keys.size(); i++) {
@@ -101,14 +103,20 @@ public class KeyedConfiguration {
     protected void load(final boolean initial) {
         for (final ConfigKey<?> key : this.keys) {
             if (initial || key.reloadable()) {
-                Object value;
+                Object value = null;
 
                 try {
                     value = key.get(this.adapter);
                 } catch (final ConfigException e) {
-                    value = e.getValue(key);
-                    this.logger.warn(e.getMessage(key) + " The value of '{}' will be used instead.",
-                            value);
+                    if (key instanceof SimpleConfigKey) {
+                        final SimpleConfigKey<?> simpleKey = (SimpleConfigKey<?>) key;
+
+                        value = e.getValue(simpleKey);
+                        this.logger.warn(e.getMessage(simpleKey)
+                                + " The value of '{}' will be used instead.", value);
+                    } else {
+                        this.logger.severe("Caught exception during loading of config.", e);
+                    }
                 }
 
                 this.values.put(key, value);

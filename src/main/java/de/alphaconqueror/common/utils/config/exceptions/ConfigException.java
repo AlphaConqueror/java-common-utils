@@ -24,13 +24,13 @@
 
 package de.alphaconqueror.common.utils.config.exceptions;
 
-import de.alphaconqueror.common.utils.config.key.ConfigKey;
+import de.alphaconqueror.common.utils.config.key.SimpleConfigKey;
 
 public abstract class ConfigException extends RuntimeException {
 
-    public abstract String getMessage(ConfigKey<?> key);
+    public abstract String getMessage(SimpleConfigKey<?> key);
 
-    public Object getValue(final ConfigKey<?> key) {
+    public Object getValue(final SimpleConfigKey<?> key) {
         return key.def();
     }
 }
