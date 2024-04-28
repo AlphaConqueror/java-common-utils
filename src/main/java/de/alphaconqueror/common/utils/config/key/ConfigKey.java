@@ -25,7 +25,6 @@
 package de.alphaconqueror.common.utils.config.key;
 
 import de.alphaconqueror.common.utils.config.adapter.ConfigurationAdapter;
-import de.alphaconqueror.common.utils.config.exceptions.KeyNotFoundException;
 
 /**
  * Represents a key in the configuration.
@@ -67,7 +66,6 @@ public interface ConfigKey<T> {
      *
      * @param adapter the config adapter instance
      * @return the value mapped to this key
-     * @throws KeyNotFoundException if key cannot be found
      */
-    T get(ConfigurationAdapter adapter) throws KeyNotFoundException;
+    T get(ConfigurationAdapter adapter);
 }

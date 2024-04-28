@@ -25,7 +25,6 @@
 package de.alphaconqueror.common.utils.config.key;
 
 import de.alphaconqueror.common.utils.config.adapter.ConfigurationAdapter;
-import de.alphaconqueror.common.utils.config.exceptions.NotInLimitException;
 import java.util.Collection;
 import java.util.Set;
 
@@ -57,7 +56,8 @@ public class SimpleConfigKey<T> implements ConfigKey<T> {
             return result;
         }
 
-        throw new NotInLimitException(this, result);
+        adapter.getLogger().warn("Value '{}' is not in {}.", result, this.possibilities());
+        return this.def;
     }
 
     public ConfigKeyFactory<T> factory() {

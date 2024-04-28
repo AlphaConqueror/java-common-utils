@@ -25,7 +25,6 @@
 package de.alphaconqueror.common.utils.config.key;
 
 import de.alphaconqueror.common.utils.config.adapter.ConfigurationAdapter;
-import de.alphaconqueror.common.utils.config.exceptions.NotInRangeException;
 
 public class ComparableConfigKey<T extends Comparable<T>> extends SimpleConfigKey<T> {
 
@@ -42,7 +41,8 @@ public class ComparableConfigKey<T extends Comparable<T>> extends SimpleConfigKe
 
         if (this.min != null && this.min.compareTo(value) >= 0
                 || this.max != null && this.max.compareTo(value) <= 0) {
-            throw new NotInRangeException(this, value);
+            adapter.getLogger().warn("Value {} not in range [{},{}].", value, this.min, this.max);
+            return this.def();
         }
 
         return value;

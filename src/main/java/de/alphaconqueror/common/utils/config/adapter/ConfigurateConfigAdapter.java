@@ -25,13 +25,12 @@
 package de.alphaconqueror.common.utils.config.adapter;
 
 import com.google.common.base.Splitter;
-import de.alphaconqueror.common.utils.config.exceptions.KeyNotFoundException;
+import de.alphaconqueror.common.utils.logging.Logger;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.Types;
@@ -39,15 +38,22 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 public abstract class ConfigurateConfigAdapter implements ConfigurationAdapter {
 
+    private final Logger logger;
     private final Path path;
     private ConfigurationNode root;
 
-    public ConfigurateConfigAdapter(final Path path) {
+    public ConfigurateConfigAdapter(final Logger logger, final Path path) {
+        this.logger = logger;
         this.path = path;
         this.reload();
     }
 
     protected abstract ConfigurationLoader<? extends ConfigurationNode> createLoader(Path path);
+
+    @Override
+    public Logger getLogger() {
+        return this.logger;
+    }
 
     @Override
     public void reload() {
@@ -62,83 +68,139 @@ public abstract class ConfigurateConfigAdapter implements ConfigurationAdapter {
     }
 
     @Override
-    public String getString(final String path, final String def) throws KeyNotFoundException {
-        return this.resolvePath(path, def, ConfigurationNode::isVirtual).getString(def);
+    public String getString(final String path, final String def) {
+        final ConfigurationNode node = this.resolvePath(path);
+
+        if (node.isVirtual()) {
+            this.logKeyNotFound(path, def);
+            return def;
+        }
+
+        return node.getString(def);
     }
 
     @Override
-    public int getInteger(final String path, final int def) throws KeyNotFoundException {
-        return this.resolvePath(path, def, ConfigurationNode::isVirtual).getInt(def);
+    public int getInteger(final String path, final int def) {
+        final ConfigurationNode node = this.resolvePath(path);
+
+        if (node.isVirtual()) {
+            this.logKeyNotFound(path, def);
+            return def;
+        }
+
+        return node.getInt(def);
     }
 
     @Override
-    public long getLong(final String path, final long def) throws KeyNotFoundException {
-        return this.resolvePath(path, def, ConfigurationNode::isVirtual).getLong(def);
+    public long getLong(final String path, final long def) {
+        final ConfigurationNode node = this.resolvePath(path);
+
+        if (node.isVirtual()) {
+            this.logKeyNotFound(path, def);
+            return def;
+        }
+
+        return node.getLong(def);
     }
 
     @Override
-    public double getDouble(final String path, final double def) throws KeyNotFoundException {
-        return this.resolvePath(path, def, ConfigurationNode::isVirtual).getDouble(def);
+    public double getDouble(final String path, final double def) {
+        final ConfigurationNode node = this.resolvePath(path);
+
+        if (node.isVirtual()) {
+            this.logKeyNotFound(path, def);
+            return def;
+        }
+
+        return node.getDouble(def);
     }
 
     @Override
-    public boolean getBoolean(final String path, final boolean def) throws KeyNotFoundException {
-        return this.resolvePath(path, def, ConfigurationNode::isVirtual).getBoolean(def);
+    public boolean getBoolean(final String path, final boolean def) {
+        final ConfigurationNode node = this.resolvePath(path);
+
+        if (node.isVirtual()) {
+            this.logKeyNotFound(path, def);
+            return def;
+        }
+
+        return node.getBoolean(def);
     }
 
     @Override
-    public List<String> getStringList(final String path,
-            final List<String> def) throws KeyNotFoundException {
-        return this.resolvePath(path, def, node -> node.isVirtual() || !node.isList())
-                .getList(Object::toString);
+    public List<String> getStringList(final String path, final List<String> def) {
+        final ConfigurationNode node = this.resolvePath(path);
+
+        if (node.isVirtual() || !node.isList()) {
+            this.logKeyNotFound(path, def);
+            return def;
+        }
+
+        return node.getList(Object::toString, def);
     }
 
     @Override
-    public List<Integer> getIntList(final String path,
-            final List<Integer> def) throws KeyNotFoundException {
-        return this.resolvePath(path, def, node -> node.isVirtual() || !node.isList())
-                .getList(Types::asInt, def);
+    public List<Integer> getIntList(final String path, final List<Integer> def) {
+        final ConfigurationNode node = this.resolvePath(path);
+
+        if (node.isVirtual() || !node.isList()) {
+            this.logKeyNotFound(path, def);
+            return def;
+        }
+
+        return node.getList(Types::asInt, def);
     }
 
     @Override
-    public List<Long> getLongList(final String path,
-            final List<Long> def) throws KeyNotFoundException {
-        return this.resolvePath(path, def, node -> node.isVirtual() || !node.isList())
-                .getList(Types::asLong, def);
+    public List<Long> getLongList(final String path, final List<Long> def) {
+        final ConfigurationNode node = this.resolvePath(path);
+
+        if (node.isVirtual() || !node.isList()) {
+            this.logKeyNotFound(path, def);
+            return def;
+        }
+
+        return node.getList(Types::asLong, def);
     }
 
     @Override
-    public List<Double> getDoubleList(final String path,
-            final List<Double> def) throws KeyNotFoundException {
-        return this.resolvePath(path, def, node -> node.isVirtual() || !node.isList())
-                .getList(Types::asDouble, def);
+    public List<Double> getDoubleList(final String path, final List<Double> def) {
+        final ConfigurationNode node = this.resolvePath(path);
+
+        if (node.isVirtual() || !node.isList()) {
+            this.logKeyNotFound(path, def);
+            return def;
+        }
+
+        return node.getList(Types::asDouble, def);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public Map<String, String> getStringMap(final String path,
-            final Map<String, String> def) throws KeyNotFoundException {
-        final Map<String, Object> m = (Map<String, Object>) this.resolvePath(path, def,
-                node -> node.isVirtual() || !node.isMap()).getValue(Collections.emptyMap());
+    public Map<String, String> getStringMap(final String path, final Map<String, String> def) {
+        final ConfigurationNode node = this.resolvePath(path);
 
-        return m.entrySet()
+        if (node.isVirtual() || !node.isMap()) {
+            this.logKeyNotFound(path, def);
+            return def;
+        }
+
+        final Map<String, Object> map = (Map<String, Object>) node.getValue(Collections.emptyMap());
+        return map.entrySet()
                 .stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().toString()));
     }
 
-    private ConfigurationNode resolvePath(final String path, final Object def,
-            final Predicate<ConfigurationNode> predicate) {
+    private ConfigurationNode resolvePath(final String path) {
         if (this.root == null) {
-            throw new RuntimeException("Config is not loaded.");
+            throw new UnsupportedOperationException("Config is not loaded.");
         }
 
-        final ConfigurationNode node = this.root.getNode(
-                Splitter.on('.').splitToList(path).toArray());
+        return this.root.getNode(Splitter.on('.').splitToList(path).toArray());
+    }
 
-        if (predicate.test(node)) {
-            throw new KeyNotFoundException(path, def);
-        }
-
-        return node;
+    private void logKeyNotFound(final String path, final Object def) {
+        this.logger.warn("Could not find key '{}' in the config. The value of '{}' will be "
+                + "used instead.", path, def);
     }
 }

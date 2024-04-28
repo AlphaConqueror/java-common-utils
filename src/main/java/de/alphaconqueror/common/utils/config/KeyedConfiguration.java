@@ -25,7 +25,6 @@
 package de.alphaconqueror.common.utils.config;
 
 import de.alphaconqueror.common.utils.config.adapter.ConfigurationAdapter;
-import de.alphaconqueror.common.utils.config.exceptions.ConfigException;
 import de.alphaconqueror.common.utils.config.key.ConfigKey;
 import de.alphaconqueror.common.utils.logging.Logger;
 import de.alphaconqueror.common.utils.util.ImmutableCollectors;
@@ -102,17 +101,7 @@ public class KeyedConfiguration {
     protected void load(final boolean initial) {
         for (final ConfigKey<?> key : this.keys) {
             if (initial || key.reloadable()) {
-                Object value = null;
-
-                try {
-                    value = key.get(this.adapter);
-                } catch (final ConfigException e) {
-                    value = e.getDef();
-                    this.logger.warn(e.getMessage() + " The value of '{}' will be used instead.",
-                            value);
-                }
-
-                this.values.put(key, value);
+                this.values.put(key, key.get(this.adapter));
             }
         }
     }

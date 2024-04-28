@@ -24,32 +24,33 @@
 
 package de.alphaconqueror.common.utils.config.adapter;
 
-import de.alphaconqueror.common.utils.config.exceptions.KeyNotFoundException;
+import de.alphaconqueror.common.utils.logging.Logger;
 import java.util.List;
 import java.util.Map;
 
 public interface ConfigurationAdapter {
 
+    Logger getLogger();
+
     void reload();
 
-    String getString(String path, String def) throws KeyNotFoundException;
+    String getString(String path, String def);
 
-    int getInteger(String path, int def) throws KeyNotFoundException;
+    int getInteger(String path, int def);
 
-    long getLong(String path, long def) throws KeyNotFoundException;
+    long getLong(String path, long def);
 
-    double getDouble(String path, double def) throws KeyNotFoundException;
+    double getDouble(String path, double def);
 
-    boolean getBoolean(String path, boolean def) throws KeyNotFoundException;
+    boolean getBoolean(String path, boolean def);
 
-    List<String> getStringList(String path, List<String> def) throws KeyNotFoundException;
+    List<String> getStringList(String path, List<String> def);
 
-    List<Integer> getIntList(String path, List<Integer> def) throws KeyNotFoundException;
+    List<Integer> getIntList(String path, List<Integer> def);
 
-    List<Long> getLongList(String path, List<Long> def) throws KeyNotFoundException;
+    List<Long> getLongList(String path, List<Long> def);
 
-    List<Double> getDoubleList(String path, List<Double> def) throws KeyNotFoundException;
+    List<Double> getDoubleList(String path, List<Double> def);
 
-    Map<String, String> getStringMap(String path,
-            Map<String, String> def) throws KeyNotFoundException;
+    Map<String, String> getStringMap(String path, Map<String, String> def);
 }
